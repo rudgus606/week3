@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+
+    <title>나만의 블로그</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+
+
+    <script>
+        $(document).ready(function(){
+            $.ajax({
+                type: "GET",
+                url: "http://spartacodingclub.shop/sparta_api/weather/seoul",
+                data: {},
+                success: function (response) {
+                    console.log((response['temp']))
+                    let temp_html = response['temp'];
+
+                    $('#cur_temp').append(temp_html);
+                }
+            });
+            getPost();
+        });
+
+        function getPost() {
+
+            $('#card-list').empty();
+
+            $.ajax({
+                type: "GET",
+                url: "api/posts",
+                success: function (response) {
+                    for(let i = 0; i < response.length; i++) {
+                        let post = response[i];
+                        let id = post['id'];
+                        let title = post['title'];
+                        let author = post['author'];
+                        let createTime = post['createAt']
+                        let modifiedTime = post['modifiedAt']
+                        addHTML(id, title, author, createTime, modifiedTime)
+                    }
+                }
+            })
+        }
+
+        function addHTML(id, title, author, createTime, modifiedTime) {
+            let tempHtml = `<div class="card" onclick="cardClick(${id})" id="cards">
+                <div class="metadata">
+                    <div>제목</div>
+                    <div id="${id}-title" class="title">
+                        ${title}
+                    </div>
+                    <div>작성자</div>
+                    <div id="${id}-author" class="author">
+                        ${author}
+                    </div>
+                    <div>작성일</div>
+                    <div class="date">
+                        ${modifiedTime}
+                    </div>
+                </div>
+            </div>`;
+            $('#card-list').append(tempHtml);
+        }
+
+        function cardClick(id) {
+            console.log(id)
+            let url = "/detail.html?id="+id;
+            window.location.href = url;
+        }
+
+        function posting() {
+            let title = $('#title').val()
+            let author = $('#author').val()
+            let password = $('#password').val()
+            let content = $('#content').val()
+
+            if (chkVal(title,author,password,content)) {
+                let data = {'title': title, 'author': author, 'password': password, 'content': content};
+                $.ajax({
+                    type: "POST",
+                    url: "api/posts",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        alert('메시지가 성공적으로 작성되었습니다.');
+                        window.location.reload();
+                    }
+                })
+            }
+        }
+
+        function chkVal(title, author, password, content) {
+            if (title == '') {
+                alert("제목을 입력하세요")
+                return false;
+            }
+            if (author == '') {
+                alert("작성자를 입력하세요")
+                return false;
+            }
+            if (password == '') {
+                alert("비밀번호를 입력하세요")
+                return false;
+            }
+            if (content == '') {
+                alert("내용을 입력하세요")
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+
+<body>
+<div class="movies_title">
+    <h1>나만의 블로그</h1>
+    <p id="cur_temp">
+        현재기온 :
+    </p>
+</div>
+
+
+<div class="my-post" id="post-box">
+
+
+
+    <div class="input-group mb-2">
+        <input id = "title" type="text" class="form-control" placeholder="제목" aria-label="title" aria-describedby="basic-addon1">
+    </div>
+
+    <div class="input-group mb-4 ">
+        <input id = "author" type="text" class="form-control" placeholder="작성자" aria-label="author" aria-describedby="basic-addon1">
+        <input id = "password" type="text" class="form-control" placeholder="비밀번호" aria-label="password" aria-describedby="basic-addon1">
+    </div>
+
+    <div class="input-group">
+        <textarea id = "content" class="form-control" placeholder="내용" aria-label="With textarea"></textarea>
+    </div>
+
+    <div class="posting_button">
+        <button onclick="posting()" type="button" class="btn btn-dark">글 쓰기</button>
+    </div>
+
+
+</div>
+<div style="text-align: center; margin-top: 20px"></div>
+<div class="card-quote" >
+    <div class="wrap" id="card-list">
+
+    </div>
+</div>
+
+
+</body>
+
+</html>
