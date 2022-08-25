@@ -1,44 +1,41 @@
-package com.example.week3.entity;
+package com.example.week3.Entity;
 
-import com.example.week3.dto.PostRequestDto;
-import com.example.week3.utils.Timestamped;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.example.week3.Dto.RequestDto.PostRequestDto;
+import lombok.*;
 
 import javax.persistence.*;
 
 
-@Entity                         // 엔티티(테이블임을 선언)
-@NoArgsConstructor              // 기본생성자 생성생략
 @Getter
-public class Post extends Timestamped {
-    @GeneratedValue(strategy = GenerationType.AUTO)
+@NoArgsConstructor
+@Setter
+@AllArgsConstructor
+@Entity
+public class Post extends Timestamped{
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long id;            // 게시물 고유번호
-
-    @Column(nullable = false)   // not Null
-    private String title;       // 게시물 이름
+    private  Long id;
 
     @Column(nullable = false)
-    private String author;      // 게시물 작성자이름
+    private String title;
 
     @Column(nullable = false)
-    private String content;     // 게시물 내용
+    private String name;
 
     @Column(nullable = false)
-    private String password;    // 비밀번호
+    private String content;
 
-    public Post(PostRequestDto requestDto) {
+    public Post(PostRequestDto requestDto,String nickName) {
         this.title = requestDto.getTitle();
-        this.author = requestDto.getAuthor();
+        this.name = nickName;
+        //this.password = requestDto.getPassword();
         this.content = requestDto.getContent();
-        this.password = requestDto.getPassword();
     }
 
-    public void update(PostRequestDto requestDto) {
+    //수정하기
+    public void updateByRequestDto(PostRequestDto requestDto){
         this.title = requestDto.getTitle();
-        this.author = requestDto.getAuthor();
         this.content = requestDto.getContent();
-        this.password = requestDto.getPassword();
     }
 }

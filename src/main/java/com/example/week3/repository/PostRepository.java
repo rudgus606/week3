@@ -1,10 +1,8 @@
-package com.example.week3.repository;
+package com.example.week3.Repository;
 
-import com.example.week3.entity.Post;
+import com.example.week3.Entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
 public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findAllByOrderByCreateAtDesc();
+    boolean existsByNameAndId(String name,Long id);
 }
